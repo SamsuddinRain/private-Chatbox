@@ -19,6 +19,7 @@ const sendButton = document.getElementById('sendButton');
 
 // --- Approval System ---
 let waitingForApproval = false;
+let isAdmin = false;
 function isChatApproved() {
     return localStorage.getItem('chat_approved') === 'true';
 }
@@ -28,7 +29,7 @@ function setChatApproved() {
 function updateApprovalUI() {
     const approvalArea = document.getElementById('approvalArea');
     const chatInput = document.querySelector('.chat-input');
-    if (waitingForApproval && !isChatApproved()) {
+    if (!isChatApproved() && !isAdmin && waitingForApproval) {
         approvalArea.innerHTML = `
             <div class="approval-message">Waiting for admin approval. Please wait...</div>
             <div class="loader"></div>
@@ -36,15 +37,11 @@ function updateApprovalUI() {
         `;
         chatInput.style.pointerEvents = 'none';
         chatInput.style.opacity = '0.6';
-    } else if (isChatApproved()) {
+    } else {
         approvalArea.innerHTML = `
             <div class="connected-message">Connected</div>
             <div class="start-chat-message">Start chat with Saim</div>
         `;
-        chatInput.style.pointerEvents = 'auto';
-        chatInput.style.opacity = '1';
-    } else {
-        approvalArea.innerHTML = '';
         chatInput.style.pointerEvents = 'auto';
         chatInput.style.opacity = '1';
     }
@@ -53,9 +50,15 @@ function updateApprovalUI() {
 // --- On page load, check for approval link ---
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
+    if (params.get('admin') === '1') {
+        isAdmin = true;
+        setChatApproved();
+    }
     if (params.get('approve') === '1') {
         setChatApproved();
-        alert('Chat approved! You can now chat with the user.');
+        if (!isAdmin) {
+            alert('Chat approved! You can now chat with the user.');
+        }
     }
     updateApprovalUI();
     listenForMessages();
