@@ -89,7 +89,6 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
     if (params.get('approve') === '1' && params.get('userId')) {
-        // Admin approves a specific user by userId
         db.ref(`approval/${params.get('userId')}`).set({ approved: true });
         setChatApproved();
     }
