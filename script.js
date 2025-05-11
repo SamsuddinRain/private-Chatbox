@@ -21,12 +21,17 @@ const sendButton = document.getElementById('sendButton');
 let waitingForApproval = false;
 let isAdmin = false;
 let currentUserName = '';
+
 function isChatApproved() {
     return localStorage.getItem('chat_approved') === 'true';
 }
 function setChatApproved() {
     localStorage.setItem('chat_approved', 'true');
 }
+function clearChatApproved() {
+    localStorage.removeItem('chat_approved');
+}
+
 function updateApprovalUI() {
     const approvalArea = document.getElementById('approvalArea');
     const chatInput = document.querySelector('.chat-input');
@@ -38,31 +43,56 @@ function updateApprovalUI() {
         `;
         chatInput.style.pointerEvents = 'none';
         chatInput.style.opacity = '0.6';
+    } else if (isChatApproved() || isAdmin) {
+        let html = `<div class="connected-message">Connected</div>`;
+        if (!isAdmin) {
+            html += `<div class="start-chat-message">Start chat with Saim</div>`;
+        }
+        approvalArea.innerHTML = html;
+        chatInput.style.pointerEvents = 'auto';
+        chatInput.style.opacity = '1';
     } else {
-        approvalArea.innerHTML = `
-            <div class="connected-message">Connected</div>
-            <div class="start-chat-message">Start chat with Saim</div>
-        `;
+        approvalArea.innerHTML = '';
         chatInput.style.pointerEvents = 'auto';
         chatInput.style.opacity = '1';
     }
 }
 
-// --- On page load, check for approval link ---
+// --- On page load, check for approval link and listen for approval in Firebase ---
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
+    // --- Reset chat for user on refresh or new visit ---
+    if (!params.get('admin')) {
+        clearChatApproved();
+        localStorage.removeItem('chat_user_name');
+        db.ref('approval').set({ approved: false });
+    }
     if (params.get('admin') === '1') {
         isAdmin = true;
         setChatApproved();
         currentUserName = 'Admin';
         userNameInput.value = currentUserName;
         userNameInput.style.display = 'none';
+        // Admin sets approval in Firebase
+        db.ref('approval').set({ approved: true });
     } else {
         const savedName = localStorage.getItem('chat_user_name');
         if (savedName) {
             currentUserName = savedName;
             userNameInput.value = currentUserName;
             userNameInput.style.display = 'none';
+        }
+        // Listen for approval in Firebase
+        if (!isAdmin) {
+            db.ref('approval/approved').on('value', (snapshot) => {
+                if (snapshot.val() === true) {
+                    setChatApproved();
+                    updateApprovalUI();
+                } else {
+                    clearChatApproved();
+                    updateApprovalUI();
+                }
+            });
         }
     }
     if (params.get('approve') === '1') {
@@ -188,4 +218,6 @@ function updateSendButtonState() {
 }
 userNameInput.addEventListener('input', updateSendButtonState);
 messageInput.addEventListener('input', updateSendButtonState);
-updateSendButtonState(); 
+updateSendButtonState();
+
+db.ref('approval').set({ approved: false }); 
