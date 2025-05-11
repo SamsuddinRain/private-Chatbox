@@ -21,7 +21,17 @@ const sendButton = document.getElementById('sendButton');
 let waitingForApproval = false;
 let isAdmin = false;
 let currentUserName = '';
+let currentUserId = '';
 let approvedListener = null;
+
+function getOrCreateUserId() {
+    let userId = localStorage.getItem('chat_user_id');
+    if (!userId) {
+        userId = 'user-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
+        localStorage.setItem('chat_user_id', userId);
+    }
+    return userId;
+}
 
 function isChatApproved() {
     return localStorage.getItem('chat_approved') === 'true';
@@ -62,6 +72,7 @@ function updateApprovalUI() {
 // --- On page load, check for approval link and listen for approval in Firebase ---
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
+    currentUserId = getOrCreateUserId();
     if (params.get('admin') === '1') {
         isAdmin = true;
         setChatApproved();
@@ -72,26 +83,26 @@ window.addEventListener('DOMContentLoaded', () => {
         const savedName = localStorage.getItem('chat_user_name');
         if (savedName) {
             currentUserName = savedName;
-            userNameInput.value = currentName;
+            userNameInput.value = currentUserName;
             userNameInput.style.display = 'none';
-            listenForApproval(savedName);
+            listenForApproval(currentUserId);
         }
     }
-    if (params.get('approve') === '1' && params.get('user')) {
-        // Admin approves a specific user
-        db.ref(`approval/${params.get('user')}`).set({ approved: true });
+    if (params.get('approve') === '1' && params.get('userId')) {
+        // Admin approves a specific user by userId
+        db.ref(`approval/${params.get('userId')}`).set({ approved: true });
         setChatApproved();
     }
     updateApprovalUI();
     listenForMessages();
 });
 
-function listenForApproval(userName) {
+function listenForApproval(userId) {
     if (approvedListener) approvedListener.off();
-    approvedListener = db.ref(`approval/${userName}/approved`);
+    approvedListener = db.ref(`approval/${userId}/approved`);
     approvedListener.on('value', (snapshot) => {
         const approved = snapshot.val();
-        console.log("Approval changed for user:", userName, approved);
+        console.log("Approval changed for userId:", userId, approved);
         if (approved === true) {
             setChatApproved();
             updateApprovalUI();
@@ -140,14 +151,15 @@ function sendMessageToFirebase(userName, message) {
 }
 
 // --- EmailJS Notification Function ---
-async function sendEmailNotification(userName, message) {
+async function sendEmailNotification(userName, message, userId) {
     try {
         const now = new Date();
         const time = now.toLocaleString();
         const templateParams = {
             name: userName,
             message: message,
-            time: time
+            time: time,
+            userId: userId
         };
         await emailjs.send(
             'Portfolio Contact',         // Service ID
@@ -176,7 +188,7 @@ function handleSendMessage() {
         currentUserName = userName;
         localStorage.setItem('chat_user_name', userName);
         userNameInput.style.display = 'none';
-        listenForApproval(userName);
+        listenForApproval(currentUserId);
     }
 
     if (!message) {
@@ -187,9 +199,12 @@ function handleSendMessage() {
     if (!isChatApproved() && !isAdmin && !waitingForApproval) {
         waitingForApproval = true;
         updateApprovalUI();
+        // Store user in Firebase (optional, for admin dashboard)
+        db.ref(`users/${currentUserId}`).set({ name: userName, requestedAt: Date.now() });
         // Set approval to false for this user
-        db.ref(`approval/${userName}`).set({ approved: false });
-        sendEmailNotification(userName, message);
+        db.ref(`approval/${currentUserId}`).set({ approved: false });
+        sendEmailNotification(userName, message, currentUserId);
+        listenForApproval(currentUserId);
         return;
     }
     if (!isChatApproved() && !isAdmin) {
