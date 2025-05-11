@@ -56,7 +56,7 @@ function updateApprovalUI() {
         chatInput.style.opacity = '0.6';
     } else if (isChatApproved() || isAdmin) {
         let html = `<div class="connected-message">Connected</div>`;
-        if (!isAdmin) {
+        if (!isAdmin && isChatApproved()) {
             html += `<div class="start-chat-message">Start chat with Saim</div>`;
         }
         approvalArea.innerHTML = html;
@@ -85,8 +85,9 @@ window.addEventListener('DOMContentLoaded', () => {
             currentUserName = savedName;
             userNameInput.value = currentUserName;
             userNameInput.style.display = 'none';
-            listenForApproval(currentUserId);
         }
+        // Always listen for approval after name is set
+        listenForApproval(currentUserId);
     }
     if (params.get('approve') === '1' && params.get('userId')) {
         db.ref(`approval/${params.get('userId')}`).set({ approved: true });
@@ -135,6 +136,12 @@ function listenForMessages() {
     db.ref('messages').on('child_added', (snapshot) => {
         const data = snapshot.val();
         addMessageToUI(data.userName, data.message, data.time);
+
+        // If user is waiting for approval and receives a message from Admin, connect!
+        if (!isAdmin && !isChatApproved() && data.userName === 'Admin') {
+            setChatApproved();
+            updateApprovalUI();
+        }
     });
 }
 
@@ -147,6 +154,15 @@ function sendMessageToFirebase(userName, message) {
         message,
         time
     });
+    // --- NEW: If admin sends a message and approval is not set, set approval for the user ---
+    if (isAdmin && message && userName === 'Admin' && currentUserId) {
+        // Find the userId from the URL (for admin)
+        const params = new URLSearchParams(window.location.search);
+        const approvedUserId = params.get('userId');
+        if (approvedUserId) {
+            db.ref(`approval/${approvedUserId}`).set({ approved: true });
+        }
+    }
 }
 
 // --- EmailJS Notification Function ---
