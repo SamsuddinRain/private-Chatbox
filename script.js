@@ -78,11 +78,15 @@ sendButton.addEventListener("click", () => {
     return;
   }
 
+  if (!isAdmin) {
+    userName = userName || nameInput.value.trim();
+  }
+
   const chatRef = database.ref("chats/" + userId);
   const chatData = {
     message,
     time: new Date().toLocaleTimeString(),
-    sent: isAdmin
+    sent: !isAdmin
   };
 
   chatRef.push(chatData);
@@ -95,7 +99,7 @@ chatRef.on("child_added", (snapshot) => {
   const msgDiv = document.createElement("div");
   msgDiv.classList.add("message");
 
-  if ((data.sent && isAdmin) || (!data.sent && !isAdmin)) {
+  if ((data.sent && !isAdmin) || (!data.sent && isAdmin)) {
     msgDiv.classList.add("sent");
   } else {
     msgDiv.classList.add("received");
