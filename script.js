@@ -20,6 +20,7 @@ const sendButton = document.getElementById('sendButton');
 // --- Approval System ---
 let waitingForApproval = false;
 let isAdmin = false;
+let currentUserName = '';
 function isChatApproved() {
     return localStorage.getItem('chat_approved') === 'true';
 }
@@ -53,6 +54,16 @@ window.addEventListener('DOMContentLoaded', () => {
     if (params.get('admin') === '1') {
         isAdmin = true;
         setChatApproved();
+        currentUserName = 'Admin';
+        userNameInput.value = currentUserName;
+        userNameInput.style.display = 'none';
+    } else {
+        const savedName = localStorage.getItem('chat_user_name');
+        if (savedName) {
+            currentUserName = savedName;
+            userNameInput.value = currentUserName;
+            userNameInput.style.display = 'none';
+        }
     }
     if (params.get('approve') === '1') {
         setChatApproved();
@@ -65,7 +76,8 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- Add message to chat UI ---
-function addMessageToUI(userName, message, time, isOwn) {
+function addMessageToUI(userName, message, time) {
+    const isOwn = (userName === currentUserName);
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isOwn ? 'sent' : 'received'}`;
     const messageContent = document.createElement('div');
@@ -86,7 +98,7 @@ function listenForMessages() {
     db.ref('messages').on('child_added', (snapshot) => {
         const data = snapshot.val();
         const currentUser = userNameInput.value.trim();
-        addMessageToUI(data.userName, data.message, data.time, data.userName === currentUser);
+        addMessageToUI(data.userName, data.message, data.time);
     });
 }
 
@@ -126,31 +138,38 @@ async function sendEmailNotification(userName, message) {
 
 // --- Handle Send Message ---
 function handleSendMessage() {
-    const userName = userNameInput.value.trim();
+    let userName = currentUserName;
     const message = messageInput.value.trim();
 
-    if (!userName || !message) {
-        alert('Please enter both your name and message');
+    if (!userName) {
+        userName = userNameInput.value.trim();
+        if (!userName) {
+            alert('Please enter your name');
+            return;
+        }
+        currentUserName = userName;
+        localStorage.setItem('chat_user_name', userName);
+        userNameInput.style.display = 'none';
+    }
+
+    if (!message) {
+        alert('Please enter your message');
         return;
     }
 
-    // If not approved and not already waiting, trigger approval UI and email
-    if (!isChatApproved() && !waitingForApproval) {
+    if (!isChatApproved() && !isAdmin && !waitingForApproval) {
         waitingForApproval = true;
         updateApprovalUI();
-        sendEmailNotification(userName, message); // <-- send approval email instantly
+        sendEmailNotification(userName, message);
         return;
     }
-    // If still not approved, block further sends
-    if (!isChatApproved()) {
+    if (!isChatApproved() && !isAdmin) {
         alert('Admin approval required to start chat.');
         return;
     }
 
-    // Send message to Firebase
     sendMessageToFirebase(userName, message);
 
-    // Clear message input
     messageInput.value = '';
 }
 
