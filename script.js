@@ -1,18 +1,17 @@
-// script.js
-
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyD_ZKST2r-4v5o4x1ryBbe8d_IWGZuSSt4",
+  authDomain: "private-chatbox-f81f0.firebaseapp.com",
+  databaseURL: "https://private-chatbox-f81f0-default-rtdb.firebaseio.com",
+  projectId: "private-chatbox-f81f0",
+  storageBucket: "private-chatbox-f81f0.appspot.com", // ✅ Corrected
+  messagingSenderId: "105172308420",
+  appId: "1:105172308420:web:15c95d7100ab87d7a21491"
 };
+
 
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
-emailjs.init("YOUR_EMAILJS_USER_ID");
+emailjs.init("RUpvCIMdUC_m5up3C");
 
 const nameInput = document.getElementById("nameInput");
 const messageInput = document.getElementById("messageInput");
@@ -61,7 +60,7 @@ sendButton.addEventListener("click", () => {
     const timestamp = new Date().toLocaleString();
     requestRef.set({ name, message, time: timestamp });
 
-    emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+    emailjs.send("Saim", "template_pb5m8b7", {
       name,
       message,
       time: timestamp,
