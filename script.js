@@ -21,6 +21,7 @@ const sendButton = document.getElementById('sendButton');
 let waitingForApproval = false;
 let isAdmin = false;
 let currentUserName = '';
+let approvedListener = null;
 
 function isChatApproved() {
     return localStorage.getItem('chat_approved') === 'true';
@@ -61,49 +62,45 @@ function updateApprovalUI() {
 // --- On page load, check for approval link and listen for approval in Firebase ---
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
-    // --- Reset chat for user on refresh or new visit ---
-    if (!params.get('admin')) {
-        clearChatApproved();
-        localStorage.removeItem('chat_user_name');
-        db.ref('approval').set({ approved: false });
-    }
     if (params.get('admin') === '1') {
         isAdmin = true;
         setChatApproved();
         currentUserName = 'Admin';
         userNameInput.value = currentUserName;
         userNameInput.style.display = 'none';
-        // Admin sets approval in Firebase
-        db.ref('approval').set({ approved: true });
     } else {
         const savedName = localStorage.getItem('chat_user_name');
         if (savedName) {
             currentUserName = savedName;
-            userNameInput.value = currentUserName;
+            userNameInput.value = currentName;
             userNameInput.style.display = 'none';
-        }
-        // Listen for approval in Firebase
-        if (!isAdmin) {
-            db.ref('approval/approved').on('value', (snapshot) => {
-                if (snapshot.val() === true) {
-                    setChatApproved();
-                    updateApprovalUI();
-                } else {
-                    clearChatApproved();
-                    updateApprovalUI();
-                }
-            });
+            listenForApproval(savedName);
         }
     }
-    if (params.get('approve') === '1') {
+    if (params.get('approve') === '1' && params.get('user')) {
+        // Admin approves a specific user
+        db.ref(`approval/${params.get('user')}`).set({ approved: true });
         setChatApproved();
-        if (!isAdmin) {
-            alert('Chat approved! You can now chat with the user.');
-        }
     }
     updateApprovalUI();
     listenForMessages();
 });
+
+function listenForApproval(userName) {
+    if (approvedListener) approvedListener.off();
+    approvedListener = db.ref(`approval/${userName}/approved`);
+    approvedListener.on('value', (snapshot) => {
+        const approved = snapshot.val();
+        console.log("Approval changed for user:", userName, approved);
+        if (approved === true) {
+            setChatApproved();
+            updateApprovalUI();
+        } else {
+            clearChatApproved();
+            updateApprovalUI();
+        }
+    });
+}
 
 // --- Add message to chat UI ---
 function addMessageToUI(userName, message, time) {
@@ -127,7 +124,6 @@ function listenForMessages() {
     chatMessages.innerHTML = '';
     db.ref('messages').on('child_added', (snapshot) => {
         const data = snapshot.val();
-        const currentUser = userNameInput.value.trim();
         addMessageToUI(data.userName, data.message, data.time);
     });
 }
@@ -180,6 +176,7 @@ function handleSendMessage() {
         currentUserName = userName;
         localStorage.setItem('chat_user_name', userName);
         userNameInput.style.display = 'none';
+        listenForApproval(userName);
     }
 
     if (!message) {
@@ -190,6 +187,8 @@ function handleSendMessage() {
     if (!isChatApproved() && !isAdmin && !waitingForApproval) {
         waitingForApproval = true;
         updateApprovalUI();
+        // Set approval to false for this user
+        db.ref(`approval/${userName}`).set({ approved: false });
         sendEmailNotification(userName, message);
         return;
     }
@@ -199,7 +198,6 @@ function handleSendMessage() {
     }
 
     sendMessageToFirebase(userName, message);
-
     messageInput.value = '';
 }
 
@@ -218,6 +216,4 @@ function updateSendButtonState() {
 }
 userNameInput.addEventListener('input', updateSendButtonState);
 messageInput.addEventListener('input', updateSendButtonState);
-updateSendButtonState();
-
-db.ref('approval').set({ approved: false }); 
+updateSendButtonState(); 
