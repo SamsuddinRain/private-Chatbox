@@ -45,9 +45,8 @@ function sendMessageToFirebase(message) {
 function listenForMessages() {
     database.ref(`messages/${userId}`).on("child_added", (snapshot) => {
         const data = snapshot.val();
-        if (data) {
-            addMessageToUI(data.userName, data.message, data.time);
-        }
+        if (!data || !data.message || !data.userName || !data.time) return;
+        addMessageToUI(data.userName, data.message, data.time);
     }, (error) => {
         console.error("Error listening for messages:", error);
         approvalArea.innerHTML = `
@@ -70,11 +69,12 @@ database.ref(".info/connected").on("value", (snap) => {
 
 // Add message to UI
 function addMessageToUI(userName, message, time) {
+    if (!message || typeof message !== 'string' || userName === undefined || time === undefined) return;
     const messageDiv = document.createElement("div");
     messageDiv.className = `message ${userName === "Admin" ? "sent" : "received"}`;
     messageDiv.innerHTML = `
         <div class="message-content">${message}</div>
-        <div class="message-info">${userName} - ${time}</div>
+        <div class="message-info">${userName === "Admin" ? time : 'user - ' + time}</div>
     `;
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
