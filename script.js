@@ -23,6 +23,7 @@ const isAdmin = urlParams.get("admin") === "1";
 const userId = urlParams.get("userId") || Date.now().toString();
 let currentUserName = "";
 let isApproved = false;
+let waitingForApproval = false;
 
 function checkApproval() {
   if (isAdmin) {
@@ -41,20 +42,31 @@ function checkApproval() {
 }
 
 function updateApprovalUI() {
-  if (isApproved) {
+  if (isAdmin) {
     approvalArea.innerHTML = `
       <div class="connected-message">Connected</div>
-      ${!isAdmin ? '<div class="start-chat-message">Start chat with Saim</div>' : ''}
+      <div class="start-chat-message">Start chat with Saim</div>
     `;
     messageInput.disabled = false;
     sendButton.disabled = false;
-  } else {
+  } else if (isApproved) {
+    approvalArea.innerHTML = `
+      <div class="connected-message">Connected</div>
+      <div class="start-chat-message">Start chat with Saim</div>
+    `;
+    messageInput.disabled = false;
+    sendButton.disabled = false;
+  } else if (waitingForApproval) {
     approvalArea.innerHTML = `
       <div class="approval-message">Waiting for admin approval...</div>
       <div class="loader"></div>
     `;
     messageInput.disabled = true;
     sendButton.disabled = true;
+  } else {
+    approvalArea.innerHTML = "";
+    messageInput.disabled = false;
+    sendButton.disabled = false;
   }
 }
 
@@ -121,6 +133,11 @@ sendButton.addEventListener("click", () => {
     nameInput.style.display = "none";
   }
 
+  if (!isApproved && !isAdmin && !waitingForApproval) {
+    waitingForApproval = true;
+    updateApprovalUI();
+  }
+
   sendMessageToFirebase(currentUserName || "Admin", message);
   messageInput.value = "";
 });
@@ -140,5 +157,11 @@ window.addEventListener("DOMContentLoaded", () => {
   
   checkApproval();
   listenForMessages();
-  updateApprovalUI();
+  if (isAdmin || isApproved || waitingForApproval) {
+    updateApprovalUI();
+  } else {
+    approvalArea.innerHTML = "";
+    messageInput.disabled = false;
+    sendButton.disabled = false;
+  }
 });
