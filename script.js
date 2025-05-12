@@ -127,7 +127,7 @@ function addMessageToUI(userName, message, time) {
     <div class="read-receipt" style="display:none;"></div>
   `;
   chatMessages.appendChild(messageDiv);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 50);
   if (userName === currentUserName) {
     database.ref(`messages/${userId}/readReceipts`).on('value', (snapshot) => {
       const data = snapshot.val();
@@ -155,6 +155,7 @@ sendButton.addEventListener("click", () => {
 
   sendMessageToFirebase(currentUserName || "Admin", message);
   messageInput.value = "";
+  setTimeout(() => { messageInput.focus(); }, 100);
 });
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -239,3 +240,8 @@ function markMessagesAsRead() {
 }
 chatMessages.addEventListener('mouseenter', markMessagesAsRead);
 chatMessages.addEventListener('touchstart', markMessagesAsRead);
+
+// --- On mobile, keep input visible when keyboard opens ---
+window.addEventListener('resize', () => {
+  setTimeout(() => { messageInput.scrollIntoView({ behavior: 'smooth', block: 'end' }); }, 100);
+});
