@@ -98,7 +98,7 @@ function sendMessageToFirebase(userName, message) {
     }
 
     // Normal chat message
-    database.ref(`chat/${userId}`).push({
+    database.ref(`messages/${userId}`).push({
         userName: userName,
         message: message,
         time: time
@@ -107,7 +107,7 @@ function sendMessageToFirebase(userName, message) {
 
 // Listen for messages with error handling
 function listenForMessages() {
-    database.ref(`chat/${userId}`).on("child_added", (snapshot) => {
+    database.ref(`messages/${userId}`).on("child_added", (snapshot) => {
         const data = snapshot.val();
         if (data) {
             addMessageToUI(data.userName, data.message, data.time);

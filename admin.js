@@ -34,7 +34,7 @@ function sendMessageToFirebase(message) {
     const now = new Date();
     const time = now.toLocaleTimeString();
     
-    database.ref(`chat/${userId}`).push({
+    database.ref(`messages/${userId}`).push({
         userName: "Admin",
         message: message,
         time: time
@@ -43,7 +43,7 @@ function sendMessageToFirebase(message) {
 
 // Listen for messages with error handling
 function listenForMessages() {
-    database.ref(`chat/${userId}`).on("child_added", (snapshot) => {
+    database.ref(`messages/${userId}`).on("child_added", (snapshot) => {
         const data = snapshot.val();
         if (data) {
             addMessageToUI(data.userName, data.message, data.time);
