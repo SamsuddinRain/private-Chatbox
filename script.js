@@ -127,7 +127,6 @@ function addMessageToUI(userName, message, time) {
     <div class=\"read-receipt\" style=\"display:none;\"></div>
   `;
   chatMessages.appendChild(messageDiv);
-  setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 50);
   if (userName === currentUserName) {
     database.ref(`messages/${userId}/readReceipts`).on('value', (snapshot) => {
       const data = snapshot.val();

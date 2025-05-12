@@ -76,10 +76,7 @@ function addMessageToUI(userName, message, time) {
         <div class=\"message-content\">${message}</div>
         <div class=\"message-info\">${userName === "Admin" ? time : 'user - ' + time}</div>
     `;
-    // Always append new message at the end (bottom)
     chatMessages.appendChild(messageDiv);
-    // Always scroll to bottom after new message
-    setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 50);
 }
 
 // Handle send button click
