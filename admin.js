@@ -73,11 +73,13 @@ function addMessageToUI(userName, message, time) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `message ${userName === "Admin" ? "sent" : "received"}`;
     messageDiv.innerHTML = `
-        <div class="message-content">${message}</div>
-        <div class="message-info">${userName === "Admin" ? time : 'user - ' + time}</div>
+        <div class=\"message-content\">${message}</div>
+        <div class=\"message-info\">${userName === "Admin" ? time : 'user - ' + time}</div>
     `;
+    // Always append new message at the end (bottom)
     chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    // Always scroll to bottom after new message
+    setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 50);
 }
 
 // Handle send button click

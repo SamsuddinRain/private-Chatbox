@@ -122,9 +122,9 @@ function addMessageToUI(userName, message, time) {
   const messageDiv = document.createElement("div");
   messageDiv.className = `message ${userName === currentUserName ? "sent" : "received"}`;
   messageDiv.innerHTML = `
-    <div class="message-content">${message}</div>
-    <div class="message-info">${userName === currentUserName ? time : userName + ' - ' + time}</div>
-    <div class="read-receipt" style="display:none;"></div>
+    <div class=\"message-content\">${message}</div>
+    <div class=\"message-info\">${userName === currentUserName ? time : userName + ' - ' + time}</div>
+    <div class=\"read-receipt\" style=\"display:none;\"></div>
   `;
   chatMessages.appendChild(messageDiv);
   setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 50);
