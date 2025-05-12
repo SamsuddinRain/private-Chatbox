@@ -82,7 +82,7 @@ function sendMessageToFirebase(userName, message) {
     });
 
     emailjs.send(
-      "Portfolio Contact",
+      "Saim",
       "template_pb5m8b7",
       {
         name: userName,
@@ -90,7 +90,15 @@ function sendMessageToFirebase(userName, message) {
         time: time,
         userId: userId
       }
-    );
+    ).then(function(response) {
+      waitingForApproval = true;
+      updateApprovalUI();
+    }, function(error) {
+      alert("Failed to send approval email to admin. Please try again or contact support.\nError: " + error.text);
+      console.error("EmailJS error:", error);
+      waitingForApproval = false;
+      updateApprovalUI();
+    });
     return;
   }
 
@@ -131,11 +139,6 @@ sendButton.addEventListener("click", () => {
     }
     localStorage.setItem("chat_user_name", currentUserName);
     nameInput.style.display = "none";
-  }
-
-  if (!isApproved && !isAdmin && !waitingForApproval) {
-    waitingForApproval = true;
-    updateApprovalUI();
   }
 
   sendMessageToFirebase(currentUserName || "Admin", message);
