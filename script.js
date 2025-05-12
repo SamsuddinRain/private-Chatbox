@@ -112,16 +112,18 @@ function sendMessageToFirebase(userName, message) {
 function listenForMessages() {
   database.ref(`messages/${userId}`).on("child_added", (snapshot) => {
     const data = snapshot.val();
+    if (!data || !data.message || !data.userName || !data.time) return;
     addMessageToUI(data.userName, data.message, data.time);
   });
 }
 
 function addMessageToUI(userName, message, time) {
+  if (!message || typeof message !== 'string' || userName === undefined || time === undefined) return;
   const messageDiv = document.createElement("div");
   messageDiv.className = `message ${userName === currentUserName ? "sent" : "received"}`;
   messageDiv.innerHTML = `
     <div class="message-content">${message}</div>
-    <div class="message-info">${userName} - ${time}</div>
+    <div class="message-info">${userName === currentUserName ? time : userName + ' - ' + time}</div>
     <div class="read-receipt" style="display:none;"></div>
   `;
   chatMessages.appendChild(messageDiv);
