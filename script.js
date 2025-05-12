@@ -122,9 +122,19 @@ function addMessageToUI(userName, message, time) {
   messageDiv.innerHTML = `
     <div class="message-content">${message}</div>
     <div class="message-info">${userName} - ${time}</div>
+    <div class="read-receipt" style="display:none;"></div>
   `;
   chatMessages.appendChild(messageDiv);
   chatMessages.scrollTop = chatMessages.scrollHeight;
+  if (userName === currentUserName) {
+    database.ref(`messages/${userId}/readReceipts`).on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data && data.user !== currentUserName) {
+        messageDiv.querySelector('.read-receipt').style.display = 'flex';
+        messageDiv.querySelector('.read-receipt').innerHTML = `<span class='checkmark'>✔✔</span> Seen`;
+      }
+    });
+  }
 }
 
 sendButton.addEventListener("click", () => {
@@ -167,4 +177,63 @@ window.addEventListener("DOMContentLoaded", () => {
     messageInput.disabled = false;
     sendButton.disabled = false;
   }
+  listenForTyping();
 });
+
+// --- DARK/DAY MODE TOGGLE ---
+const darkModeBtn = document.getElementById('toggleDarkMode');
+if (darkModeBtn) {
+  darkModeBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    darkModeBtn.textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('chat_dark_mode', isDark ? '1' : '0');
+  });
+  // On load, set mode from localStorage
+  if (localStorage.getItem('chat_dark_mode') === '1') {
+    document.body.classList.add('dark-mode');
+    darkModeBtn.textContent = '☀️';
+  }
+}
+
+// --- TYPING INDICATOR ---
+const typingIndicator = document.getElementById('typingIndicator');
+let typingTimeout;
+messageInput.addEventListener('input', () => {
+  if (!isApproved) return;
+  database.ref(`messages/${userId}/typing`).set({
+    user: currentUserName || 'User',
+    isTyping: messageInput.value.length > 0,
+    time: Date.now()
+  });
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    database.ref(`messages/${userId}/typing`).set({
+      user: currentUserName || 'User',
+      isTyping: false,
+      time: Date.now()
+    });
+  }, 2000);
+});
+function listenForTyping() {
+  database.ref(`messages/${userId}/typing`).on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data && data.isTyping && data.user !== (currentUserName || 'User')) {
+      typingIndicator.innerHTML = `<span class="typing-indicator">${data.user} is typing <span class='dot'></span><span class='dot'></span><span class='dot'></span></span>`;
+    } else {
+      typingIndicator.innerHTML = '';
+    }
+  });
+}
+
+// --- READ RECEIPTS ---
+// Mark all messages as read when chatMessages is focused or on new message
+function markMessagesAsRead() {
+  if (!isApproved) return;
+  database.ref(`messages/${userId}/readReceipts`).set({
+    user: currentUserName || 'User',
+    time: Date.now()
+  });
+}
+chatMessages.addEventListener('mouseenter', markMessagesAsRead);
+chatMessages.addEventListener('touchstart', markMessagesAsRead);

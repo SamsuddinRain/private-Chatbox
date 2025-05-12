@@ -9,11 +9,14 @@
 <body>
   <div class="container">
     <div class="chat-container">
-      <div class="chat-header">Live Chat</div>
+      <div class="chat-header">Live Chat
+        <button id="toggleDarkMode" style="float:right; margin-top:-3px; background:none; border:none; color:white; font-size:18px; cursor:pointer;">🌙</button>
+      </div>
       <div id="approvalArea">
         <!-- Approval status will be inserted here by JavaScript -->
       </div>
       <div class="chat-messages" id="chatMessages"></div>
+      <div id="typingIndicator"></div>
       <div class="chat-input">
         <input type="text" id="nameInput" placeholder="Your name" />
         <textarea id="messageInput" placeholder="Type your message..."></textarea>
