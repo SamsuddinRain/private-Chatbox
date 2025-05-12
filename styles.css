@@ -238,3 +238,74 @@ body.dark-mode {
 .dark-mode .chat-input button:hover {
   background: #007bff;
 }
+
+/* Responsive Design */
+@media (max-width: 700px) {
+  .container {
+    height: 100vh;
+    padding: 0;
+  }
+  .chat-container {
+    max-width: 100vw;
+    min-width: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .chat-header {
+    font-size: 18px;
+    padding: 12px;
+  }
+  .chat-messages {
+    padding: 8px;
+    font-size: 15px;
+  }
+  .chat-input {
+    padding: 6px;
+  }
+  .chat-input input,
+  .chat-input textarea {
+    font-size: 13px;
+    padding: 6px;
+  }
+  .chat-input button {
+    font-size: 15px;
+    padding: 10px 0;
+  }
+}
+@media (max-width: 480px) {
+  .container {
+    height: 100vh;
+    padding: 0;
+  }
+  .chat-container {
+    max-width: 100vw;
+    min-width: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .chat-header {
+    font-size: 16px;
+    padding: 10px;
+  }
+  .chat-messages {
+    padding: 4px;
+    font-size: 14px;
+  }
+  .message {
+    max-width: 90%;
+    font-size: 14px;
+    padding: 6px 8px;
+  }
+  .chat-input {
+    padding: 4px;
+  }
+  .chat-input input,
+  .chat-input textarea {
+    font-size: 12px;
+    padding: 5px;
+  }
+  .chat-input button {
+    font-size: 14px;
+    padding: 8px 0;
+  }
+}
