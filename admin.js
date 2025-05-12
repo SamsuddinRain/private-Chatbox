@@ -87,6 +87,8 @@ sendButton.addEventListener("click", () => {
 
     sendMessageToFirebase(message);
     messageInput.value = "";
+    // Keep input focused after sending
+    messageInput.focus();
 });
 
 // Initialize
