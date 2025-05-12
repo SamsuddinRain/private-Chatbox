@@ -155,7 +155,6 @@ sendButton.addEventListener("click", () => {
 
   sendMessageToFirebase(currentUserName || "Admin", message);
   messageInput.value = "";
-  setTimeout(() => { messageInput.focus(); }, 100);
 });
 
 window.addEventListener("DOMContentLoaded", () => {
