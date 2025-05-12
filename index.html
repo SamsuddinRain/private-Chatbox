@@ -11,9 +11,7 @@
     <div class="chat-container">
       <div class="chat-header">Live Chat</div>
       <div id="approvalArea">
-        <div class="loader" id="loader" style="display: none;"></div>
-        <div class="approval-message" id="approvalMessage">Waiting for admin approval...</div>
-        <div class="connected-message" id="connectedMessage" style="display: none;">You are connected!</div>
+        <!-- Approval status will be inserted here by JavaScript -->
       </div>
       <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-input">
@@ -23,9 +21,15 @@
       </div>
     </div>
   </div>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  
+  <!-- EmailJS -->
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+  
+  <!-- Custom Script -->
   <script src="script.js"></script>
 </body>
 </html>
