@@ -115,45 +115,60 @@ body {
   color: #555;
 }
 
+/* WhatsApp-style chat input row */
 .chat-input {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   padding: 10px;
   background: #f0f0f0;
+  gap: 8px;
 }
-
 .chat-input input,
 .chat-input textarea {
-  padding: 8px;
-  margin: 5px 0;
+  flex: 1 1 auto;
+  margin: 0;
+  border-radius: 20px;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.chat-input textarea {
+  font-size: 15px;
+  padding: 10px 14px;
+  outline: none;
+  background: #fff;
   resize: none;
-  height: 60px;
+  min-height: 40px;
+  max-height: 80px;
 }
-
-.chat-input button {
-  padding: 8px 16px;
+.chat-input textarea {
+  height: 40px;
+  min-height: 40px;
+  max-height: 80px;
+}
+#sendButton {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   background: #007bff;
-  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
-  border-radius: 8px;
+  margin-left: 6px;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px #0001;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
 }
-
-.chat-input button:hover {
-  background: #0056b3;
-}
-
-.chat-input button:disabled {
+#sendButton:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+#sendButton:hover, #sendButton:focus {
+  background: #0056b3;
+}
+#sendButton svg {
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 
 .error-message {
@@ -268,15 +283,16 @@ body.dark-mode {
   }
   .chat-input {
     padding: 6px;
+    gap: 4px;
+  }
+  #sendButton {
+    width: 38px;
+    height: 38px;
   }
   .chat-input input,
   .chat-input textarea {
     font-size: 13px;
-    padding: 6px;
-  }
-  .chat-input button {
-    font-size: 15px;
-    padding: 10px 0;
+    padding: 8px 10px;
   }
 }
 @media (max-width: 480px) {
@@ -305,14 +321,15 @@ body.dark-mode {
   }
   .chat-input {
     padding: 4px;
+    gap: 2px;
+  }
+  #sendButton {
+    width: 32px;
+    height: 32px;
   }
   .chat-input input,
   .chat-input textarea {
     font-size: 12px;
-    padding: 5px;
-  }
-  .chat-input button {
-    font-size: 14px;
-    padding: 8px 0;
+    padding: 6px 8px;
   }
 }

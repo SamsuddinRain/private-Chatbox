@@ -139,6 +139,13 @@ function addMessageToUI(userName, message, time) {
   }
 }
 
+// --- WhatsApp-style send button enable/disable ---
+function updateSendButtonState() {
+  sendButton.disabled = messageInput.value.trim().length === 0;
+}
+messageInput.addEventListener('input', updateSendButtonState);
+window.addEventListener('DOMContentLoaded', updateSendButtonState);
+
 sendButton.addEventListener("click", () => {
   const message = messageInput.value.trim();
   if (!message) return;
@@ -155,6 +162,9 @@ sendButton.addEventListener("click", () => {
 
   sendMessageToFirebase(currentUserName || "Admin", message);
   messageInput.value = "";
+  updateSendButtonState();
+  // Keep input focused after sending
+  messageInput.focus();
 });
 
 window.addEventListener("DOMContentLoaded", () => {
