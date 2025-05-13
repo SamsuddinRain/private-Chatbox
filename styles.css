@@ -33,15 +33,21 @@ html, body {
   max-height: 100dvh;
   border-radius: 0;
   box-shadow: none;
+  position: relative;
+  overflow: hidden;
 }
 
 .chat-header {
+  flex: 0 0 auto;
   background: #007bff;
   color: white;
   padding: 15px;
   font-size: 20px;
   font-weight: bold;
   text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 #approvalArea {
@@ -78,15 +84,17 @@ html, body {
 }
 
 .chat-messages {
-  flex: 1 1 auto;
+  flex: 1;
   overflow-y: auto;
-  min-height: 0;
-  max-height: 100%;
   padding: 15px;
   background: #e5ddd5;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  height: calc(100dvh - 140px); /* Adjust based on header and input height */
+  min-height: 0;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scroll-behavior: smooth;
 }
 
 .message {
@@ -136,6 +144,11 @@ html, body {
   padding: 10px;
   background: #f0f0f0;
   gap: 8px;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
 }
 .chat-input input,
 .chat-input textarea {
