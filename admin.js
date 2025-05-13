@@ -77,6 +77,8 @@ function addMessageToUI(userName, message, time) {
         <div class=\"message-info\">${userName === "Admin" ? time : 'user - ' + time}</div>
     `;
     chatMessages.appendChild(messageDiv);
+    // Scroll to bottom after new message
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // Handle send button click

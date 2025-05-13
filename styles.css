@@ -85,29 +85,29 @@ html, body {
   padding: 15px;
   background: #e5ddd5;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
 }
 
 .message {
-  margin-bottom: 12px;
   max-width: 70%;
+  margin: 5px 0;
   padding: 8px 12px;
-  border-radius: 15px;
+  border-radius: 7.5px;
   position: relative;
+  word-wrap: break-word;
+  animation: fadeIn 0.3s ease;
 }
 
 .sent {
-  background-color: #dcf8c6;
   align-self: flex-end;
+  background-color: #dcf8c6;
   margin-left: auto;
-  border-bottom-right-radius: 5px;
 }
 
 .received {
-  background-color: white;
   align-self: flex-start;
+  background-color: white;
   margin-right: auto;
-  border-bottom-left-radius: 5px;
 }
 
 .message-content {
