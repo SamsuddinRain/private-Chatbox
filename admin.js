@@ -75,10 +75,21 @@ function addMessageToUI(userName, message, time) {
     messageDiv.innerHTML = `
         <div class=\"message-content\">${message}</div>
         <div class=\"message-info\">${userName === "Admin" ? time : 'user - ' + time}</div>
+        <div class=\"read-receipt\" style=\"display:none;\"></div>
     `;
     chatMessages.appendChild(messageDiv);
     // Scroll to bottom after new message
     chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    if (userName === "Admin") {
+        database.ref(`messages/${userId}/readReceipts`).on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.user !== "Admin") {
+                messageDiv.querySelector('.read-receipt').style.display = 'flex';
+                messageDiv.querySelector('.read-receipt').innerHTML = `<span class='checkmark'>✔✔</span> Seen`;
+            }
+        });
+    }
 }
 
 // Handle send button click
