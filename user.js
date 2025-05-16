@@ -22,6 +22,7 @@ const messageInput = document.getElementById("messageInput");
 const sendButton = document.getElementById("sendButton");
 const chatMessages = document.getElementById("chatMessages");
 const approvalArea = document.getElementById("approvalArea");
+const firstMsgNotice = document.getElementById("firstMsgNotice");
 
 // Get URL parameters
 const urlParams = new URLSearchParams(window.location.search);
@@ -49,6 +50,7 @@ function updateApprovalUI() {
         `;
         messageInput.disabled = false;
         sendButton.disabled = false;
+        if (firstMsgNotice) firstMsgNotice.style.display = "none";
     } else {
         approvalArea.innerHTML = `
             <div class="approval-message">Waiting for admin approval...</div>
@@ -83,9 +85,14 @@ function sendMessageToFirebase(userName, message) {
                 userId: userId
             }
         ).then(() => {
+            // Mark first message sent in localStorage
+            localStorage.setItem("chat_first_msg_sent", "1");
+            // Hide the notice
+            if (firstMsgNotice) firstMsgNotice.style.display = "none";
             // Disable input after first message
             messageInput.disabled = true;
             sendButton.disabled = true;
+            // Show approval waiting message/loader immediately
             approvalArea.innerHTML = `
                 <div class="approval-message">Waiting for admin approval...</div>
                 <div class="loader"></div>
@@ -175,4 +182,10 @@ window.addEventListener("DOMContentLoaded", () => {
     checkApproval();
     listenForMessages();
     updateApprovalUI();
+    // Show first message notice if not approved and first message not sent
+    if (!isApproved && !localStorage.getItem("chat_first_msg_sent")) {
+        if (firstMsgNotice) firstMsgNotice.style.display = "block";
+    } else {
+        if (firstMsgNotice) firstMsgNotice.style.display = "none";
+    }
 }); 

@@ -1,41 +1,35 @@
-body {
+body, html {
   font-family: Arial, sans-serif;
   background: #f0f2f5;
   margin: 0;
   padding: 0;
-}
-
-html, body {
-  height: 100dvh;
-  min-height: 100dvh;
-  max-height: 100dvh;
-  overflow: hidden;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
 }
 
 .container {
   width: 100vw;
-  height: 100dvh;
-  min-height: 100dvh;
-  max-height: 100dvh;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
   padding: 0;
   margin: 0;
   display: flex;
   justify-content: stretch;
   align-items: stretch;
-  overflow: hidden;
 }
 
 .chat-container {
   display: flex;
   flex-direction: column;
   width: 100vw;
-  height: 100dvh;
-  min-height: 100dvh;
-  max-height: 100dvh;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
   border-radius: 0;
   box-shadow: none;
   position: relative;
-  overflow: hidden;
 }
 
 .chat-header {
@@ -56,6 +50,7 @@ html, body {
 #approvalArea {
   padding: 10px;
   text-align: center;
+  margin-top: 60px; /* below header */
 }
 
 .approval-message,
@@ -87,18 +82,21 @@ html, body {
 }
 
 .chat-messages {
-  flex: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
   padding: 15px;
   background: #e5ddd5;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  margin-top: 60px; /* Header height */
-  margin-bottom: 70px; /* Input height */
-  height: calc(100dvh - 130px); /* Total height minus header and input */
+  margin-top: 60px; /* below header */
+  margin-bottom: 0;
+  height: auto;
+  min-height: 0;
+  max-height: none;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  padding-bottom: 80px;
 }
 
 .message {
@@ -153,7 +151,7 @@ html, body {
   left: 0;
   right: 0;
   z-index: 100;
-  height: 60px; /* Fixed height for input */
+  height: 60px;
 }
 .chat-input input,
 .chat-input textarea {
@@ -294,16 +292,14 @@ body.dark-mode {
 
 /* Responsive Design */
 @media (max-width: 700px) {
-  .chat-messages {
-    margin-top: 50px; /* Smaller header on mobile */
-    margin-bottom: 60px; /* Smaller input on mobile */
-    height: calc(100dvh - 110px);
-  }
-  
   .chat-header {
     padding: 10px;
+    font-size: 18px;
   }
-  
+  .chat-messages {
+    margin-top: 50px;
+    padding-bottom: 70px;
+  }
   .chat-input {
     height: 50px;
   }
@@ -326,15 +322,13 @@ body.dark-mode {
   .chat-messages {
     padding: 4px;
     font-size: 14px;
-  }
-  .message {
-    max-width: 90%;
-    font-size: 14px;
-    padding: 6px 8px;
+    margin-top: 45px;
+    padding-bottom: 65px;
   }
   .chat-input {
     padding: 4px;
     gap: 2px;
+    height: 45px;
   }
   #sendButton {
     width: 32px;
