@@ -32,5 +32,16 @@
     
     <!-- User Script -->
     <script src="user.js"></script>
+    <script>
+    function adjustChatHeight() {
+      var chatContainer = document.querySelector('.chat-container');
+      if (chatContainer) {
+        chatContainer.style.height = window.innerHeight + 'px';
+      }
+    }
+    window.addEventListener('resize', adjustChatHeight);
+    window.addEventListener('orientationchange', adjustChatHeight);
+    window.addEventListener('DOMContentLoaded', adjustChatHeight);
+    </script>
 </body>
 </html> 
