@@ -37,25 +37,38 @@ function checkApproval() {
         if (data && data.approved) {
             isApproved = true;
             updateApprovalUI();
+            messageInput.disabled = false;
+            sendButton.disabled = false;
         }
     });
 }
 
 // Update UI based on approval status
 function updateApprovalUI() {
+    const approvalArea = document.getElementById('approvalArea');
+    
     if (isApproved) {
+        // User is approved
         approvalArea.innerHTML = `
             <div class="connected-message">Connected</div>
             <div class="start-chat-message">Start chat with Saim</div>
         `;
         messageInput.disabled = false;
         sendButton.disabled = false;
-        if (firstMsgNotice) firstMsgNotice.style.display = "none";
     } else {
-        approvalArea.innerHTML = `
-            <div class="approval-message">Waiting for admin approval...</div>
-            <div class="loader"></div>
-        `;
+        // User is not approved
+        if (!localStorage.getItem("chat_first_msg_sent")) {
+            // First time user - show initial message
+            approvalArea.innerHTML = `
+                <div class="approval-message">Send first msg and wait</div>
+            `;
+        } else {
+            // Waiting for approval
+            approvalArea.innerHTML = `
+                <div class="approval-message">Waiting for admin approval...</div>
+                <div class="loader"></div>
+            `;
+        }
         messageInput.disabled = true;
         sendButton.disabled = true;
     }
@@ -87,16 +100,15 @@ function sendMessageToFirebase(userName, message) {
         ).then(() => {
             // Mark first message sent in localStorage
             localStorage.setItem("chat_first_msg_sent", "1");
-            // Hide the notice
-            if (firstMsgNotice) firstMsgNotice.style.display = "none";
-            // Disable input after first message
-            messageInput.disabled = true;
-            sendButton.disabled = true;
-            // Show approval waiting message/loader immediately
+            // Update UI to show waiting message
+            const approvalArea = document.getElementById('approvalArea');
             approvalArea.innerHTML = `
                 <div class="approval-message">Waiting for admin approval...</div>
                 <div class="loader"></div>
             `;
+            // Disable input after first message
+            messageInput.disabled = true;
+            sendButton.disabled = true;
         }).catch(error => {
             console.error("Error sending email:", error);
             alert("Error sending message. Please try again.");
@@ -114,7 +126,7 @@ function sendMessageToFirebase(userName, message) {
     // Show warning message after first message when approved
     if (isApproved) {
         const startChatMessage = document.querySelector('.start-chat-message');
-        if (startChatMessage) {
+        if (startChatMessage && startChatMessage.textContent === "Start chat with Saim") {
             startChatMessage.textContent = "⚠️ Don't refresh the page or you'll be disconnected!";
             startChatMessage.style.color = "#dc3545";
         }
@@ -191,12 +203,6 @@ window.addEventListener("DOMContentLoaded", () => {
     checkApproval();
     listenForMessages();
     updateApprovalUI();
-    // Show first message notice if not approved and first message not sent
-    if (!isApproved && !localStorage.getItem("chat_first_msg_sent")) {
-        if (firstMsgNotice) firstMsgNotice.style.display = "block";
-    } else {
-        if (firstMsgNotice) firstMsgNotice.style.display = "none";
-    }
 });
 
 function updateConnectionStatus(status) {
