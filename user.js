@@ -188,4 +188,61 @@ window.addEventListener("DOMContentLoaded", () => {
     } else {
         if (firstMsgNotice) firstMsgNotice.style.display = "none";
     }
-}); 
+});
+
+function updateConnectionStatus(status) {
+    const approvalArea = document.getElementById('approvalArea');
+    const firstMsgNotice = document.getElementById('firstMsgNotice');
+    const startChatMessage = document.querySelector('.start-chat-message');
+    
+    if (status === 'connected') {
+        approvalArea.innerHTML = `
+            <div class="connected-message">Connected!</div>
+            <div class="start-chat-message">Start chat with Saim</div>
+        `;
+        firstMsgNotice.style.display = 'none';
+    } else if (status === 'waiting') {
+        approvalArea.innerHTML = `
+            <div class="approval-message">Waiting for admin approval...</div>
+            <div class="loader"></div>
+        `;
+        firstMsgNotice.style.display = 'none';
+    } else if (status === 'disconnected') {
+        approvalArea.innerHTML = `
+            <div class="error-message">Disconnected. Please refresh the page.</div>
+        `;
+    }
+}
+
+// Add this new function to handle the warning message
+function showChatWarning() {
+    const approvalArea = document.getElementById('approvalArea');
+    const startChatMessage = document.querySelector('.start-chat-message');
+    if (startChatMessage) {
+        startChatMessage.textContent = "⚠️ Don't refresh the page or you'll be disconnected!";
+        startChatMessage.style.color = "#dc3545";
+    }
+}
+
+// Modify the sendMessage function to show warning after first message
+function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value.trim();
+    
+    if (message) {
+        if (!hasSentFirstMessage) {
+            hasSentFirstMessage = true;
+            localStorage.setItem('hasSentFirstMessage', 'true');
+            document.getElementById('firstMsgNotice').style.display = 'none';
+            updateConnectionStatus('waiting');
+        }
+        
+        // Show warning after first message when connected
+        if (socket.connected) {
+            showChatWarning();
+        }
+        
+        socket.emit('message', { message });
+        messageInput.value = '';
+    }
+} 
