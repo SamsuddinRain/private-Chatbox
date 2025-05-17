@@ -290,20 +290,53 @@ body.dark-mode {
     overflow: visible !important;
   }
   .chat-header {
-    padding: 10px;
-    font-size: 18px;
+    padding: 8px;
+    font-size: 16px;
+    min-height: 40px;
+  }
+  #approvalArea {
+    padding: 5px;
   }
   .chat-messages {
     min-height: 0;
     max-height: none;
     height: auto;
     overflow-y: auto;
-    padding-bottom: 70px;
+    padding: 8px;
+    padding-bottom: 60px;
+    margin-top: 0;
   }
   .chat-input {
     position: static;
     height: auto;
-    min-height: 50px;
+    min-height: 45px;
+    padding: 5px;
+    gap: 4px;
+  }
+  .chat-input input,
+  .chat-input textarea {
+    padding: 8px 12px;
+    min-height: 35px;
+    max-height: 60px;
+  }
+  #sendButton {
+    width: 35px;
+    height: 35px;
+  }
+  #sendButton svg {
+    width: 20px;
+    height: 20px;
+  }
+  .message {
+    max-width: 85%;
+    margin: 4px 0;
+    padding: 6px 10px;
+  }
+  .message-content {
+    font-size: 14px;
+  }
+  .message-info {
+    font-size: 11px;
   }
 }
 @media (max-width: 480px) {
@@ -318,28 +351,42 @@ body.dark-mode {
     box-shadow: none;
   }
   .chat-header {
-    font-size: 16px;
-    padding: 10px;
+    font-size: 15px;
+    padding: 6px;
+    min-height: 35px;
   }
   .chat-messages {
     padding: 4px;
-    font-size: 14px;
-    margin-top: 45px;
-    padding-bottom: 65px;
+    padding-bottom: 55px;
   }
   .chat-input {
     padding: 4px;
-    gap: 2px;
-    height: 45px;
+    min-height: 40px;
+  }
+  .chat-input input,
+  .chat-input textarea {
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
   }
   #sendButton {
     width: 32px;
     height: 32px;
   }
-  .chat-input input,
-  .chat-input textarea {
-    font-size: 12px;
-    padding: 6px 8px;
+  #sendButton svg {
+    width: 18px;
+    height: 18px;
+  }
+  .message {
+    max-width: 90%;
+    margin: 3px 0;
+    padding: 5px 8px;
+  }
+  .message-content {
+    font-size: 13px;
+  }
+  .message-info {
+    font-size: 10px;
   }
 }
 
