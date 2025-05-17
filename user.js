@@ -110,6 +110,15 @@ function sendMessageToFirebase(userName, message) {
         message: message,
         time: time
     });
+
+    // Show warning message after first message when approved
+    if (isApproved) {
+        const startChatMessage = document.querySelector('.start-chat-message');
+        if (startChatMessage) {
+            startChatMessage.textContent = "⚠️ Don't refresh the page or you'll be disconnected!";
+            startChatMessage.style.color = "#dc3545";
+        }
+    }
 }
 
 // Listen for messages with error handling

@@ -9,11 +9,12 @@
 <body>
     <div class="container">
         <div class="chat-container">
-            <div class="chat-header">User Chat</div>
-            <div id="approvalArea">
-                <!-- Approval status will be inserted here -->
+            <div class="chat-header">
+                User Chat
+                <div id="approvalArea">
+                    <div id="firstMsgNotice" class="approval-message">Send first msg and wait</div>
+                </div>
             </div>
-            <div id="firstMsgNotice" style="text-align:center;color:#007bff;font-weight:bold;margin:10px 0 0 0;">Send first msg and wait</div>
             <div class="chat-messages" id="chatMessages"></div>
             <div class="chat-input">
                 <input type="text" id="nameInput" placeholder="Your name">
